@@ -1,12 +1,11 @@
 ---
-title: "Generate files for groups"
+title: "Generate template files for handing out to each students"
 ---
 
 ```{r, include=FALSE, message=FALSE, results='hide', warning=FALSE, error=FALSE}
-library(readxl)
 library(tidyverse)
-# requires Java
-library("xlsx")
+library(readxl)
+library(xlsx) # requires Java
 ```
 
 ```{r}
@@ -50,8 +49,7 @@ for (i in 1:last(groups_data$Team)) {
   wb <- loadWorkbook(file.path(path_input, "template.xlsx"))
   sheet <- getSheets(wb)[[1]]
   
-  
-  # NOTE: colors don't work properly see ?CellStyle
+  # NOTE: colors don't work properly; see ?CellStyle
   # styleGreen <- CellStyle(wb) + Fill(backgroundColor = "#E2EFDA")
   # styleOrange <- CellStyle(wb) + Fill(backgroundColor = "#FFE699")
   
