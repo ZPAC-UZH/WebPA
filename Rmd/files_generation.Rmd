@@ -13,8 +13,8 @@ library(dplyr)
 ```
 
 ```{r}
-path_input <- "input"
-path_output <- "output"
+path_input <- "../input"
+path_output <- "../output"
 ```
 
 

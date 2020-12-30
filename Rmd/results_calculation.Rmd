@@ -10,8 +10,8 @@ library(xlsx)
 source("R/calculate_rating.R")
 ```
 ```{r}
-path_input <- "input"
-path_output <- file.path("output", "calculated_adjustments.xlsx")
+path_input <- "../input"
+path_output <- file.path("../output", "calculated_adjustments.xlsx")
 ```
 
 Read the sizes of the groups from sizes.csv.  
