@@ -7,22 +7,24 @@ library(tidyverse)
 library(readxl)
 
 options("dplyr.summarise.inform" = FALSE)  # disables warning in dplyr::summary() (experimental lifecycle)
-
 ```
+
 ```{r}
 path_input <- "../input"
 path_output <- file.path("../output", "webpa_score.csv")
 ```
 
-## Student data
+## List of all students and groups
 
 ```{r}
 students_group_df <- read_excel(file.path(path_input, "students_groups.xlsx"))
 ```
 
-## Submitted ratings
+## Ratings submitted by students
+
 Read the sizes of the groups from sizes.csv.  
 Set path to submissions folder with the following structure:  
+```
 - submissions/  
   - group_01/  
     - file1.xlsx  (NOTE: the file name doesn't matter)
@@ -31,7 +33,7 @@ Set path to submissions folder with the following structure:
   - group_02/  
     - file1.xlsx
     - file2.xlsx
-
+```
 
 A function to extract ratings from submitted Excel files:
 ```{r}
@@ -52,6 +54,7 @@ extract_rating <- function(individual_path) {
 ```
 
 
+Extract the ratings into one big tibble.
 ```{r}
 # read submitted Excel file and collect all ratings
 rating_input_df <- 
@@ -66,7 +69,7 @@ rating_input_df <-
 
 [WebPA algorithm](http://webpaproject.lboro.ac.uk/academic-guidance/a-worked-example-of-the-scoring-algorithm/)
 ```{r}
-# calculate fudge factor based on the number of submissions
+# calculate fudge factor based on the number of received ratings
 n_submitted_df <- 
   rating_input_df %>% 
   group_by(group_number) %>% 
@@ -90,7 +93,7 @@ fudge_df <-
 # perform WebPA calculations
 webpa_df <- 
   
-  # generate list of all students as rater x ratee
+  # generate list of all possible raters, cross with ratees
   students_group_df %>%
   select(rater = Person, group_number = Team) %>% 
   mutate(ratee = rater) %>% 
@@ -101,13 +104,13 @@ webpa_df <-
   left_join(rating_input_df, 
             by = c("group_number", "rater", "ratee")) %>% 
 
-  # normalize by total given per rater
+  # normalize by total given ratings from each rater
   group_by(group_number, rater) %>%
   mutate(rater_total_given = sum(rating, na.rm = TRUE)) %>%
   ungroup() %>%
   mutate(norm_received = rating / rater_total_given) %>% 
 
-  # accumulate normalized rating by ratee
+  # accumulate normalized rating for each ratee
   group_by(group_number, ratee) %>% 
   summarize(sum_norm_received = sum(norm_received, na.rm = TRUE)) %>% 
   ungroup() %>% 
@@ -115,16 +118,16 @@ webpa_df <-
   # adjust with the fudge factor
   left_join(fudge_df, by = "group_number") %>% 
   mutate(webpa_score = sum_norm_received * fudge_factor) %>% 
-  
-  # handle the case where nobody submitted
+
+  # handle the case when nobody from the group submitted
   mutate(webpa_score = if_else(is.nan(webpa_score), 1, webpa_score)) %>% 
-  
+    
   # keep only relevant columns
   select(group_number, ratee, webpa_score)
 
 ```
-Save the WebPA score to CSV.
 
+Save the WebPA score to CSV.
 ```{r}
 webpa_df %>% 
   write_csv(path_output)
