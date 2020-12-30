@@ -8,4 +8,4 @@
 .Ruserdata
 *.nb.html
 
-output/calculated_adjustments.xlsx
+output/webpa_score.csv
