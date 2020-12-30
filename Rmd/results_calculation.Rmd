@@ -18,7 +18,9 @@ path_submitted <- file.path(path_input, "submitted_ratings")
 ## List of all students and groups
 
 ```{r}
-students_group_df <- read_excel(file.path(path_input, "students_groups.xlsx"))
+students_group_df <- 
+  read_excel(file.path(path_input, "students_groups.xlsx"), 
+             col_types = c("text", "text"))
 ```
 
 ## Ratings submitted by students
