@@ -9,6 +9,10 @@ library(magrittr)
 library(xlsx)
 source("R/calculate_rating.R")
 ```
+```{r}
+path_input <- "input"
+path_output <- file.path("output", "calculated_adjustments.xlsx")
+```
 
 Read the sizes of the groups from sizes.csv.  
 Set path to submissions folder with the following structure:  
@@ -27,25 +31,20 @@ Set path to submissions folder with the following structure:
     - file2.xlsx
     ...
 ```{r}
-sizes <- read_csv("data/sizes.csv", col_types = "dd")
-path_to_groups = "example_submissions" # just the name of the folder, no /
+sizes <- read_csv(file.path(path_input, "sizes.csv"), col_types = "dd")
+path_to_groups = file.path(path_input, "submitted_ratings") # just the name of the folder, no /
 # list folders with groups' submissions
 groups_list <- list.files(path = path_to_groups)
 ```
 
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
-path = "example_submissions/group_01/" # Alex: shouldn't this path include path_to_groups variable for the folder name?
-
-# calculate rating function is in another file
-results <- calculate_rating(path, 1, sizes$group_size[sizes$group_number==1])
-
 for (i in 2:(length(groups_list))) {
   path = paste(path_to_groups, "/", groups_list[i], "/", sep ="")
   results <- rbind(results, calculate_rating(path, i, sizes$group_size[sizes$group_number==i]))
 }
 
 # saves excel file with the results
-write.xlsx(as.data.frame(results), "results.xlsx", col.names = TRUE, showNA = FALSE, row.names = FALSE)
+write.xlsx(as.data.frame(results), path_output, col.names = TRUE, showNA = FALSE, row.names = FALSE)
 ```
 
 To view results here:

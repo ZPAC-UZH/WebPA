@@ -13,12 +13,18 @@ library(dplyr)
 ```
 
 ```{r}
-groups_data <- read_excel("data/students_groups.xlsx")
+path_input <- "input"
+path_output <- "output"
+```
+
+
+```{r}
+groups_data <- read_excel(file.path(path_input, "students_groups.xlsx"))
 ```
 
 ```{r}
 data_list <- split(groups_data, f = groups_data$Team) 
-data <- read_excel("data/template.xlsx")
+data <- read_excel(file.path(path_input, "template.xlsx"))
 common <- head(data, 10) %>% # Alex: the object `data` is not defined.
   set_colnames(c("empty", "Person", "empty2", "empty3", "Team"))
 ```
@@ -26,7 +32,7 @@ common <- head(data, 10) %>% # Alex: the object `data` is not defined.
 ```{r}
 for (i in 1:last(groups_data$Team)) {
   group_name = ifelse(i >= 10, toString(i), paste("0", toString(i), sep =""))
-  name = paste("generated_files/Peer assessment Team", group_name)
+  name = file.path(path_output, "template_for_students", paste("Peer assessment Team", group_name))
   file_name = paste(name, ".xlsx", sep="")
   df <- data_list[[i]]
   df <- df %>% 
