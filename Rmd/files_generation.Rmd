@@ -15,17 +15,13 @@ path_output <- "../output"
 ```
 
 
-Prepare the template.
+Prepare the template
 ```{r}
 template_df <- read_excel(file.path(path_input, "template.xlsx"))
 last_template_row <- which(template_df[1] == "My name (x)")
-template_head <- head(template_df, last_template_row) %>%
-  add_column(
-    "empty" = NA,
-    "Person" = NA,
-    "empty2" = NA,
-    "empty3" = NA,
-    "Team" = NA)
+
+wb <- loadWorkbook(file.path(path_input, "template.xlsx"))
+sheet <- getSheets(wb)[[1]]
 ```
 
 Process student data to generate templates
@@ -35,9 +31,6 @@ data_list <- split(groups_data, f = groups_data$Team)
 
 for (i in 1:last(groups_data$Team)) {
 
-    file_name <- file.path(path_output, 
-                         "template_for_students", 
-                         sprintf("Peer assessment Team %02d.xlsx", i))
   # add columns
   individual_df <- 
     data_list[[i]] %>% 
@@ -53,7 +46,27 @@ for (i in 1:last(groups_data$Team)) {
       `Team`)
   
   
-  write.xlsx(as.data.frame(rbind(template_head, df)), file_name, col.names = FALSE, showNA = FALSE, row.names = FALSE)
+  
+  # NOTE: colors don't work properly see ?CellStyle
+  # styleGreen <- CellStyle(wb) + Fill(backgroundColor = "#E2EFDA")
+  # styleOrange <- CellStyle(wb) + Fill(backgroundColor = "#FFE699")
+  
+  # append the team-specific information
+  addDataFrame(as.data.frame(individual_df), 
+               sheet, 
+               startRow = last_template_row + 2,
+               col.names = TRUE,
+               row.names = FALSE)
+               # colStyle = list(
+               #   `1` = styleGreen,
+               #   `3` = styleGreen,
+               #   `4` = styleOrange))
+  
+  # write output file
+  file_name <- file.path(path_output, 
+                         "template_for_students", 
+                         sprintf("Peer assessment Team %02d.xlsx", i))
+  saveWorkbook(wb, file_name)
 }
 ```
 
