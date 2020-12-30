@@ -34,10 +34,14 @@ Process student data to generate templates
 ```{r}
 groups_data <- read_excel(file.path(path_input, "students_groups.xlsx"))
 data_list <- split(groups_data, f = groups_data$Team) 
+
 for (i in 1:last(groups_data$Team)) {
-  group_name = ifelse(i >= 10, toString(i), paste("0", toString(i), sep =""))
-  name = file.path(path_output, "template_for_students", paste("Peer assessment Team", group_name))
-  file_name = paste(name, ".xlsx", sep="")
+
+    file_name <- file.path(path_output, 
+                         "template_for_students", 
+                         sprintf("Peer assessment Team %02d.xlsx", i))
+  
+  
   df <- data_list[[i]]
   df <- df %>% 
     add_column(empty = NA, .before = 'Person') %>%
