@@ -20,8 +20,7 @@ Prepare the template
 template_df <- read_excel(file.path(path_input, "template.xlsx"))
 last_template_row <- which(template_df[1] == "My name (x)")
 
-wb <- loadWorkbook(file.path(path_input, "template.xlsx"))
-sheet <- getSheets(wb)[[1]]
+
 ```
 
 Process student data to generate templates
@@ -45,6 +44,11 @@ for (i in 1:last(groups_data$Team)) {
       `Comments`,
       `Team`)
   
+  # load the template (NOTE: we need to re-load the template for every team,
+  # otherwise extraneous rows of the preceding teams will present when a 
+  # subsequent team has fewer members)
+  wb <- loadWorkbook(file.path(path_input, "template.xlsx"))
+  sheet <- getSheets(wb)[[1]]
   
   
   # NOTE: colors don't work properly see ?CellStyle
