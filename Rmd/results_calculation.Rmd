@@ -12,6 +12,7 @@ options("dplyr.summarise.inform" = FALSE)  # disables warning in dplyr::summary(
 ```{r}
 path_input <- "../input"
 path_output <- file.path("../output", "webpa_score.csv")
+path_submitted <- file.path(path_input, "submitted_ratings")
 ```
 
 ## List of all students and groups
@@ -58,7 +59,7 @@ Extract the ratings into one big tibble.
 ```{r}
 # read submitted Excel file and collect all ratings
 rating_input_df <- 
-  file.path(path_input, "submitted_ratings") %>% 
+  path_submitted %>% 
   list.files(pattern = '*.xlsx', 
              full.names = TRUE, 
              recursive = TRUE) %>% 
