@@ -1,0 +1,10 @@
+# For OS X
+.DS_Store
+
+# For R
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.nb.html
+
