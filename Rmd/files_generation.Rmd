@@ -7,8 +7,6 @@ library(readxl)
 library(tidyverse)
 # requires Java
 library("xlsx")
-library(tibble)
-library(dplyr)
 ```
 
 ```{r}
@@ -40,13 +38,21 @@ for (i in 1:last(groups_data$Team)) {
     file_name <- file.path(path_output, 
                          "template_for_students", 
                          sprintf("Peer assessment Team %02d.xlsx", i))
+  # add columns
+  individual_df <- 
+    data_list[[i]] %>% 
+    mutate(
+      `My name (x)` = NA,
+      `Rating` = NA,
+      `Comments` = NA) %>% 
+    select(
+      `My name (x)`,
+      `Person`,
+      `Rating`,
+      `Comments`,
+      `Team`)
   
   
-  df <- data_list[[i]]
-  df <- df %>% 
-    add_column(empty = NA, .before = 'Person') %>%
-    add_column(empty2 = NA, .after = 'Person') %>%
-    add_column(empty3 = NA, .before = 'Team') 
   write.xlsx(as.data.frame(rbind(template_head, df)), file_name, col.names = FALSE, showNA = FALSE, row.names = FALSE)
 }
 ```
