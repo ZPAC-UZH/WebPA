@@ -1,11 +1,10 @@
 ---
-title: "R Notebook"
+title: "Calculate the grading adjustment factor accordinng to WebPA"
 ---
 
 ```{r, include=FALSE, message=FALSE, results='hide', warning=FALSE, error=FALSE}
-library(readxl)
 library(tidyverse)
-library(magrittr)
+library(readxl)
 library(xlsx)
 
 source("R/calculate_rating.R")
@@ -21,18 +20,13 @@ Read the sizes of the groups from sizes.csv.
 Set path to submissions folder with the following structure:  
 - submissions/  
   - group_01/  
-    - file1.xlsx # Alex: shouldn't this be 1.xlsx, 2.xlsx (based on the example submissions or does the file name not matter?)
+    - file1.xlsx  (NOTE: the file name doesn't matter)
     - file2.xlsx
     ...
   - group_02/  
     - file1.xlsx
     - file2.xlsx
-    ...
-  ...
-  - group_X/  
-    - file1.xlsx
-    - file2.xlsx
-    ...
+
 ```{r}
 sizes_df <- 
   read_excel(file.path(path_input, "students_groups.xlsx")) %>% 
