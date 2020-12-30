@@ -1,0 +1,43 @@
+---
+title: "Generate files for groups"
+---
+
+```{r, include=FALSE, message=FALSE, results='hide', warning=FALSE, error=FALSE}
+library(readxl)
+library(tidyverse)
+library(magrittr)
+# requires Java
+library("xlsx")
+library(tibble)
+library(dplyr)
+```
+
+```{r}
+groups_data <- read_excel("data/students_groups.xlsx")
+```
+
+```{r}
+data_list <- split(groups_data, f = groups_data$Team) 
+data <- read_excel("data/template.xlsx")
+common <- head(data, 10) %>% # Alex: the object `data` is not defined.
+  set_colnames(c("empty", "Person", "empty2", "empty3", "Team"))
+```
+
+```{r}
+for (i in 1:last(groups_data$Team)) {
+  group_name = ifelse(i >= 10, toString(i), paste("0", toString(i), sep =""))
+  name = paste("generated_files/Peer assessment Team", group_name)
+  file_name = paste(name, ".xlsx", sep="")
+  df <- data_list[[i]]
+  df <- df %>% 
+    add_column(empty = NA, .before = 'Person') %>%
+    add_column(empty2 = NA, .after = 'Person') %>%
+    add_column(empty3 = NA, .before = 'Team') 
+  write.xlsx(as.data.frame(rbind(common, df)), file_name, col.names = FALSE, showNA = FALSE, row.names = FALSE)
+}
+```
+
+
+
+
+

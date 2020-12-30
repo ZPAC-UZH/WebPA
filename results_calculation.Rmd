@@ -1,0 +1,61 @@
+---
+title: "R Notebook"
+---
+
+```{r, include=FALSE, message=FALSE, results='hide', warning=FALSE, error=FALSE}
+library(readxl)
+library(tidyverse)
+library(magrittr)
+library(xlsx)
+source("R/calculate_rating.R")
+```
+
+Read the sizes of the groups from sizes.csv.  
+Set path to submissions folder with the following structure:  
+- submissions/  
+  - group_01/  
+    - file1.xlsx # Alex: shouldn't this be 1.xlsx, 2.xlsx (based on the example submissions or does the file name not matter?)
+    - file2.xlsx
+    ...
+  - group_02/  
+    - file1.xlsx
+    - file2.xlsx
+    ...
+  ...
+  - group_X/  
+    - file1.xlsx
+    - file2.xlsx
+    ...
+```{r}
+sizes <- read_csv("data/sizes.csv", col_types = "dd")
+path_to_groups = "example_submissions" # just the name of the folder, no /
+# list folders with groups' submissions
+groups_list <- list.files(path = path_to_groups)
+```
+
+```{r, warning=FALSE, error=FALSE, message=FALSE}
+path = "example_submissions/group_01/" # Alex: shouldn't this path include path_to_groups variable for the folder name?
+
+# calculate rating function is in another file
+results <- calculate_rating(path, 1, sizes$group_size[sizes$group_number==1])
+
+for (i in 2:(length(groups_list))) {
+  path = paste(path_to_groups, "/", groups_list[i], "/", sep ="")
+  results <- rbind(results, calculate_rating(path, i, sizes$group_size[sizes$group_number==i]))
+}
+
+# saves excel file with the results
+write.xlsx(as.data.frame(results), "results.xlsx", col.names = TRUE, showNA = FALSE, row.names = FALSE)
+```
+
+To view results here:
+```{r}
+results
+```
+
+
+
+
+
+
+
