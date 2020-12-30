@@ -100,20 +100,16 @@ webpa_df <-
   # enter the submitted ratings
   left_join(rating_input_df, 
             by = c("group_number", "rater", "ratee")) %>% 
-  mutate(rating = replace_na(rating, 0))%>% 
-  
+
   # normalize by total given per rater
   group_by(group_number, rater) %>%
-  mutate(rater_total_given = sum(rating)) %>%
+  mutate(rater_total_given = sum(rating, na.rm = TRUE)) %>%
   ungroup() %>%
   mutate(norm_received = rating / rater_total_given) %>% 
 
-  # handle the case where some member did not submit anything
-  mutate(norm_received = if_else(is.nan(norm_received), 0, norm_received)) %>% 
-  
   # accumulate normalized rating by ratee
   group_by(group_number, ratee) %>% 
-  summarize(sum_norm_received = sum(norm_received)) %>% 
+  summarize(sum_norm_received = sum(norm_received, na.rm = TRUE)) %>% 
   ungroup() %>% 
   
   # adjust with the fudge factor
