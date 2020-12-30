@@ -7,7 +7,10 @@ library(readxl)
 library(tidyverse)
 library(magrittr)
 library(xlsx)
+
 source("R/calculate_rating.R")
+options("dplyr.summarise.inform" = FALSE)  # disables warning in dplyr::summary() (experimental lifecycle)
+
 ```
 ```{r}
 path_input <- "../input"
@@ -31,7 +34,14 @@ Set path to submissions folder with the following structure:
     - file2.xlsx
     ...
 ```{r}
-sizes <- read_csv(file.path(path_input, "sizes.csv"), col_types = "dd")
+sizes_df <- 
+  read_excel(file.path(path_input, "students_groups.xlsx")) %>% 
+  group_by(Team) %>% 
+  summarize(group_size = n()) %>% 
+  ungroup() %>% 
+  select(group_number = Team, group_size)
+
+
 path_to_groups = file.path(path_input, "submitted_ratings") # just the name of the folder, no /
 # list folders with groups' submissions
 groups_list <- list.files(path = path_to_groups)
@@ -40,7 +50,7 @@ groups_list <- list.files(path = path_to_groups)
 ```{r, warning=FALSE, error=FALSE, message=FALSE}
 for (i in 2:(length(groups_list))) {
   path = paste(path_to_groups, "/", groups_list[i], "/", sep ="")
-  results <- rbind(results, calculate_rating(path, i, sizes$group_size[sizes$group_number==i]))
+  results <- rbind(results, calculate_rating(path, i, sizes_df$group_size[sizes_df$group_number==i]))
 }
 
 # saves excel file with the results
