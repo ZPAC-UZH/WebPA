@@ -29,7 +29,7 @@ Read the sizes of the groups from sizes.csv.
 Set path to submissions folder with the following structure:  
 ```
 - submissions/  
-  - group_01/  
+  - group_01/     (NOTE: the intermediate folder names don't matter)
     - file1.xlsx  (NOTE: the file name doesn't matter)
     - file2.xlsx
     ...
@@ -55,6 +55,7 @@ nrow_template <- which(sample_xlsx_df[1] == "My name (x)")
 A function to extract ratings from submitted Excel files:
 ```{r}
 extract_rating <- function(individual_path) {
+  message("Processing:", individual_path)
   a_rating_df <- 
     read_excel(individual_path, skip = nrow_template, 
                col_types = c("text", "text", "numeric", "text", "text")) %>% 
