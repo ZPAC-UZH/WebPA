@@ -1,42 +1,5 @@
 calculate_rating <- function(path, group_number, group_size)
 {
-  paths <- list.files(path = path, pattern='*.xlsx', full.names = TRUE)
-  number_of_submissions = length(paths)
-  
-  start <- 
-    read_excel(paths[1], skip = 10) %>% # TODO: 10 is hard-coded. Better determine it from the template
-    # tail(-9) %>%  # TODO: -9 is hard-coded
-    select(
-      `x` = "My name (x)",
-      `name` = "Person",
-      `rating` = "Rating",
-      `comment` = "Comments",
-      `group` = "Team") %>% 
-    mutate(own_name = start$name[which(start$x == "x")]) %>% 
-    select(-comment, -x)
-  
-  data <- start
-  
-  for (i in 2:(length(paths))) {
-    current <- read_excel(paste(path, paths[i], sep = "")) %>%
-      tail(-9) %>%
-      set_colnames(c("own_name", 
-                     "name", 
-                     "rating", 
-                     "comment", 
-                     "group", 
-                     "team_member")) %>%
-      select(-comment)
-    
-    temp <- current %>%
-      drop_na()
-    author_name = temp$name
-    current <- current %>%
-      mutate(
-        own_name = author_name
-      )
-    data <- rbind(data, current)
-  }
   
   temp1 <- start %>%
     group_by(name) %>%

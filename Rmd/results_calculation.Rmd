@@ -35,10 +35,37 @@ sizes_df <-
   ungroup() %>% 
   select(group_number = Team, group_size)
 
-groups_paths <- list.files(file.path(path_input, "submitted_ratings") , full.names = TRUE)
 ```
 
+A function to extract ratings from submitted Excel files:
 ```{r}
+extract_rating <- function(individual_path) {
+  a_rating_df <- 
+    read_excel(individual_path, skip = 10) %>% # TODO: 10 is hard-coded. Better determine it from the template
+    select(
+      `x` = "My name (x)",
+      `name` = "Person",
+      `rating` = "Rating",
+      `comment` = "Comments",
+      `group` = "Team")
+  
+  a_rating_df %>% 
+    mutate(own_name = a_rating_df$name[which(a_rating_df$x == "x")]) %>% 
+    select(-comment, -x)
+}
+```
+
+
+```{r}
+# TODO: iteration based on submitted file will generate the adjustment only for submitted groups
+path_ratings  <-  file.path(path_input, "submitted_ratings")
+
+submitted_paths <- list.files(path_ratings, pattern = '*.xlsx', 
+                              full.names = TRUE, recursive = TRUE)
+number_of_submissions = length(submitted_paths)
+
+rating_df <- 
+  map_dfr(submitted_paths, extract_rating)
 for (path in groups_paths) {
   results <- rbind(results, calculate_rating(path, i, sizes_df$group_size[sizes_df$group_number==i]))
 }
