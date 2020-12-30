@@ -1,10 +1,10 @@
 calculate_rating <- function(path, group_number, group_size)
 {
-  file.list <- list.files(path = path, pattern='*.xlsx', full.names = TRUE)
-  number_of_submissions = length(file.list)
+  paths <- list.files(path = path, pattern='*.xlsx', full.names = TRUE)
+  number_of_submissions = length(paths)
   
   start <- 
-    read_excel(file.list[1], skip = 10) %>% # TODO: 10 is hard-coded. Better determine it from the template
+    read_excel(paths[1], skip = 10) %>% # TODO: 10 is hard-coded. Better determine it from the template
     # tail(-9) %>%  # TODO: -9 is hard-coded
     select(
       `x` = "My name (x)",
@@ -17,8 +17,8 @@ calculate_rating <- function(path, group_number, group_size)
   
   data <- start
   
-  for (i in 2:(length(file.list))) {
-    current <- read_excel(paste(path, file.list[i], sep = "")) %>%
+  for (i in 2:(length(paths))) {
+    current <- read_excel(paste(path, paths[i], sep = "")) %>%
       tail(-9) %>%
       set_colnames(c("own_name", 
                      "name", 
