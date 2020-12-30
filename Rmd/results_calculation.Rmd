@@ -36,11 +36,26 @@ Set path to submissions folder with the following structure:
     - file2.xlsx
 ```
 
+Determine the number of rows to skip based on a sample file
+```{r}
+sample_xlsx_df <- 
+  path_submitted %>% 
+  list.files(pattern = '*.xlsx', 
+             full.names = TRUE, 
+             recursive = TRUE) %>%
+  sample(1) %>% 
+  read_excel()
+
+nrow_template <- which(sample_xlsx_df[1] == "My name (x)")
+```
+
+
 A function to extract ratings from submitted Excel files:
 ```{r}
 extract_rating <- function(individual_path) {
   a_rating_df <- 
-    read_excel(individual_path, skip = 10) %>% # TODO: 10 is hard-coded. Better determine it from the template
+    read_excel(individual_path, skip = nrow_template, 
+               col_types = c("text", "text", "numeric", "text", "text")) %>% 
     select(
       `x` = "My name (x)",
       `name` = "Person",
