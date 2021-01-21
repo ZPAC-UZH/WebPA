@@ -5,6 +5,7 @@ title: "Calculate the grading adjustment factor accordinng to WebPA"
 ```{r, include=FALSE, message=FALSE, results='hide', warning=FALSE, error=FALSE}
 library(tidyverse)
 library(readxl)
+import::from(assertthat, assert_that)
 
 options("dplyr.summarise.inform" = FALSE)  # disables warning in dplyr::summary() (experimental lifecycle)
 ```
@@ -146,19 +147,22 @@ webpa_df <-
 
 ```
 
-Save the WebPA score to CSV.
-```{r}
-webpa_df %>% 
-  write_csv(path_output)
-```
-
 Check: Adding up all WebPA score for every group should equal to the number of team members in each group
 ```{r}
-webpa_df %>% 
+webpa_check_df <- 
+  webpa_df %>% 
   group_by(group_number) %>% 
   summarize(sum_webpa = sum(webpa_score)) %>% 
   ungroup() %>% 
   left_join(n_group_df, by = "group_number") %>% 
   mutate(is_equal = sum_webpa == group_size)
+
+assert_that(all(webpa_check_df$is_equal))
+```
+
+Save the WebPA score to CSV.
+```{r}
+webpa_df %>% 
+  write_csv(path_output)
 ```
 
